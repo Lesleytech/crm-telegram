@@ -63,9 +63,7 @@ export class TelegramService {
   }
 
   async addContact(contact: AddContactDto) {
-    await telegramClient.addNewContact(contact);
-
-    return 'Contact added successfully';
+    return telegramClient.addNewContact(contact);
   }
 
   async sendMessage(phone: string, message: string) {

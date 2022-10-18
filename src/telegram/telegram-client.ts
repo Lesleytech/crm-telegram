@@ -78,6 +78,8 @@ class TelegramClient extends BaseTelegramClient {
     await this.invoke(
       new Api.contacts.ImportContacts({ contacts: [newContact] }),
     );
+
+    return this.invoke(new Api.users.GetFullUser({ id: newContact.phone }));
   }
 
   async logout() {
