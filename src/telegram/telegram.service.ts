@@ -56,7 +56,7 @@ export class TelegramService {
         throw new InternalServerErrorException(err, err.message);
       },
     });
-    await telegramClient.session.save();
+    console.log('DEBUG: String session', telegramClient.session.save());
     await redis.del(RedisKeysEnum.TelegramPhone);
 
     return 'Telegram account sign in successful';

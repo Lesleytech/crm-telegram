@@ -1,5 +1,5 @@
 import { Api, TelegramClient as BaseTelegramClient } from 'telegram';
-import { StoreSession } from 'telegram/sessions';
+import { StoreSession, StringSession } from 'telegram/sessions';
 import { NewMessage, NewMessageEvent } from 'telegram/events';
 import { Logger } from '@nestjs/common';
 import { AddContactDto } from './dto';
@@ -9,16 +9,16 @@ interface TelegramClientParams {
   onError: (err: Error) => void | Promise<boolean>;
 }
 
-const storeSession = new StoreSession('telegram_session');
-const apiId = 16249610;
-const apiHash = '98e661530af83ef0a3fef35ff2d92689';
+const stringSession = new StoreSession('telegram_session');
+const apiId = 24310903;
+const apiHash = '4ab50d35b83c0d4e900fc1839b1627e5';
 
 class TelegramClient extends BaseTelegramClient {
   private readonly clientLogger = new Logger(TelegramClient.name);
   private newMessageHandler: TelegramClientParams['onNewMessage'];
 
   constructor() {
-    super(storeSession, apiId, apiHash, {
+    super(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     });
 
@@ -30,7 +30,7 @@ class TelegramClient extends BaseTelegramClient {
       await this.connect();
 
       /* A high level request must be called in order for events to work */
-      await this.getMe();
+      // await this.getDialogs();
 
       this.addEventHandler((event) => {
         this.newMessageHandler?.(event);
@@ -46,10 +46,14 @@ class TelegramClient extends BaseTelegramClient {
     this.newMessageHandler = func;
   }
 
-  sendVerificationCode(
+  async sendVerificationCode(
     phone: string,
   ): Promise<{ phoneCodeHash: string; isCodeViaApp: boolean }> {
-    return this.sendCode({ apiHash, apiId }, phone);
+    const res = await this.sendCode({ apiHash, apiId }, phone);
+
+    console.log('DEBUG: SendVerificationCode', res);
+
+    return res;
   }
 
   signIn(
@@ -90,3 +94,10 @@ class TelegramClient extends BaseTelegramClient {
 const telegramClient = new TelegramClient();
 
 export default telegramClient;
+
+const telegramInstances = [
+  {
+    accountId: 'someuuuid',
+    instance: telegramClient,
+  },
+];
